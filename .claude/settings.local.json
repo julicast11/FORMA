@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"/Users/julianacastro/Library/CloudStorage/OneDrive-Personal/Health and Wellness/HTML CODE FORMA/FORMA HTML\" && python3 -m http.server 8080)"
+    ]
+  }
+}
