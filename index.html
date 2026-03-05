@@ -762,6 +762,74 @@ nav {
   .app { grid-template-columns: 1fr; }
   .panel-left, .panel-right { display:none; }
 }
+
+/* ─── HERO LANDING STEP ─── */
+@keyframes heroFadeUp {
+  from { opacity:0; transform:translateY(28px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+#heroStep { animation: heroFadeUp 0.8s cubic-bezier(0.22,1,0.36,1) both; }
+.hero-pill {
+  font-family:'DM Mono',monospace; font-size:8.5px; letter-spacing:0.14em;
+  text-transform:uppercase; padding:7px 16px; border-radius:20px;
+  border:1px solid var(--border2); color:var(--text3); background:var(--surface);
+  transition:all 0.2s; cursor:default;
+}
+.hero-cta-btn {
+  font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.24em;
+  text-transform:uppercase; padding:17px 56px; border-radius:10px;
+  border:none; color:#fff; background:linear-gradient(135deg, var(--gold) 0%, var(--gold2) 100%);
+  cursor:pointer; transition:all 0.25s;
+  box-shadow:0 4px 24px rgba(158,122,69,0.32), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+.hero-cta-btn:hover {
+  transform:translateY(-3px);
+  box-shadow:0 10px 40px rgba(158,122,69,0.42), inset 0 1px 0 rgba(255,255,255,0.12);
+  filter:brightness(1.06);
+}
+.hero-cta-btn:active { transform:translateY(-1px); }
+
+/* ─── NAV — frosted glass ─── */
+nav {
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  background:rgba(245,242,237,0.85) !important;
+  border-bottom-color:rgba(226,221,214,0.7) !important;
+}
+:root.dark nav {
+  background:rgba(8,8,7,0.85) !important;
+  border-bottom-color:rgba(37,36,32,0.7) !important;
+}
+
+/* ─── CARD HOVER LIFT ─── */
+.card {
+  transition:background 0.8s ease, border-color 0.8s ease, box-shadow 0.22s ease, transform 0.22s ease;
+}
+.card:hover { box-shadow:0 6px 28px rgba(0,0,0,0.07); transform:translateY(-1px); }
+.card-gold:hover { box-shadow:0 6px 28px rgba(158,122,69,0.14); }
+
+/* ─── HERO SESSION CARD ─── */
+.hero-card {
+  box-shadow:0 2px 20px rgba(158,122,69,0.08);
+  transition:background 0.8s ease, border-color 0.8s ease, box-shadow 0.25s ease;
+}
+.hero-card:hover { box-shadow:0 10px 44px rgba(158,122,69,0.16); }
+
+/* ─── MODE OVERLAY AMBIENT ─── */
+.mode-overlay {
+  background:var(--bg);
+}
+.mode-overlay::after {
+  content:''; position:absolute; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 0%, rgba(158,122,69,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 15% 90%, rgba(74,106,158,0.04) 0%, transparent 60%);
+}
+.mode-overlay > * { position:relative; z-index:1; }
+
+/* ─── FOCUS RINGS ─── */
+button:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
+input:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
 </style>
 </head>
 <body>
@@ -771,6 +839,26 @@ nav {
 
 
 <div class="mode-overlay" id="modeOverlay">
+
+  <!-- STEP 0: Hero Landing -->
+  <div id="heroStep" style="display:flex;flex-direction:column;align-items:center;gap:0;width:100%;max-width:640px;text-align:center;padding:0 24px;">
+    <svg width="76" height="76" viewBox="0 0 64 64" style="margin-bottom:30px;filter:drop-shadow(0 6px 20px rgba(158,122,69,0.28));">
+      <circle cx="32" cy="32" r="32" fill="#1a1814"/>
+      <circle cx="32" cy="32" r="28" fill="none" stroke="#9e7a45" stroke-width="1.5"/>
+      <polyline points="8,32 14,32 17,22 20,42 23,26 26,38 29,28 32,36 35,20 38,44 41,30 44,34 47,32 56,32" fill="none" stroke="#b8924f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div style="font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:0.38em;text-transform:uppercase;color:var(--text3);margin-bottom:22px;">Personal Athletic System</div>
+    <h1 style="font-family:'Playfair Display',serif;font-size:clamp(36px,6vw,66px);color:var(--text);line-height:1.08;margin-bottom:18px;letter-spacing:-0.01em;">Train with <em style="color:var(--gold);">precision.</em><br><span style="font-size:0.72em;color:var(--text2);font-style:normal;">Live without limits.</span></h1>
+    <p style="font-family:'Jost',sans-serif;font-size:15px;font-weight:300;color:var(--text3);line-height:1.75;max-width:420px;margin:0 auto 40px;">The coaching dashboard that wakes you at the right time, plans your session around your life, and adapts when things change.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:44px;">
+      <div class="hero-pill">&#9203; Smart Wake-Up</div>
+      <div class="hero-pill">&#127947; Injury-Aware Plans</div>
+      <div class="hero-pill">&#10022; AI Adjustments</div>
+      <div class="hero-pill">&#128211; Mind &amp; Journal</div>
+    </div>
+    <button class="hero-cta-btn" onclick="beginOnboarding()">Begin Your Journey &rarr;</button>
+    <p style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text4);margin-top:20px;">No account &nbsp;&middot;&nbsp; All data stays on your device</p>
+  </div>
 
   <!-- STEP 1: Name -->
   <div id="nameStep" style="display:flex;flex-direction:column;align-items:center;gap:0;">
@@ -1718,8 +1806,7 @@ function init() {
   const mode = localStorage.getItem('forma-mode');
 
   if (!name) {
-    showStep('nameStep');
-    setTimeout(() => document.getElementById('nameInput').focus(), 100);
+    showStep('heroStep');
   } else if (!loc) {
     showStep('locationStep');
     document.getElementById('locationGreeting').textContent = `Nice to meet you, ${name}.`;
@@ -1734,7 +1821,7 @@ function init() {
 
 function showStep(stepId) {
   document.getElementById('modeOverlay').classList.remove('hidden');
-  ['nameStep','locationStep','modeStep'].forEach(id => {
+  ['heroStep','nameStep','locationStep','modeStep'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
     el.style.display = id === stepId ? 'flex' : 'none';
@@ -1761,6 +1848,11 @@ function confirmLocation() {
 
 function showModeStep() {
   showStep('modeStep');
+}
+
+function beginOnboarding() {
+  showStep('nameStep');
+  setTimeout(() => document.getElementById('nameInput').focus(), 100);
 }
 
 function bootApp() {
