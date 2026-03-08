@@ -170,20 +170,6 @@ nav {
   width:60px; outline:none; text-align:center; letter-spacing:0.1em;
 }
 
-/* ─── AVAILABILITY TOGGLES ─── */
-.avail-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(110px, 1fr)); gap:8px; }
-.avail-pill {
-  display:flex; align-items:center; gap:7px; padding:9px 11px;
-  border:1px solid var(--border); border-radius:9px; cursor:pointer;
-  transition:all 0.2s; background:var(--surface2); min-height:42px;
-}
-.avail-pill.on { background:var(--gold-bg); border-color:var(--gold); }
-.avail-dot { width:6px; height:6px; border-radius:50%; background:var(--border2); flex-shrink:0; transition:background 0.2s; }
-.avail-pill.on .avail-dot { background:var(--gold); }
-.avail-icon { font-size:15px; flex-shrink:0; }
-.avail-label { font-family:'DM Mono',monospace; font-size:8.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3); transition:color 0.2s; line-height:1.3; }
-.avail-pill.on .avail-label { color:var(--gold); }
-
 /* ─── INJURY FLAGS ─── */
 .injury-row { display:flex; flex-direction:column; gap:8px; }
 .injury-item { display:flex; flex-direction:column; gap:4px; }
@@ -518,16 +504,6 @@ nav {
 .research-loading { font-family:'DM Mono',monospace; font-size:8.5px; color:var(--text3); letter-spacing:0.1em; text-transform:uppercase; animation:blink 1.2s infinite; }
 @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-/* ─── WEEK AVAILABILITY GRID ─── */
-.avail-table { width:100%; border-collapse:collapse; }
-.avail-table th { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text3); padding:4px 6px; text-align:center; }
-.avail-table td { padding:4px 6px; text-align:center; }
-.avail-toggle {
-  width:20px; height:20px; border-radius:4px; border:1px solid var(--border);
-  cursor:pointer; background:var(--surface); transition:all 0.2s; margin:auto; display:block;
-}
-.avail-toggle.on { background:var(--gold); border-color:var(--gold); }
-
 /* ─── MODE OVERLAY ─── */
 .mode-overlay {
   position:fixed; inset:0; z-index:500; background:var(--bg);
@@ -595,54 +571,6 @@ nav {
   font-family:'Jost',sans-serif; font-size:12px; color:var(--text4);
   font-weight:300; font-style:italic; margin-top:-10px;
 }
-
-/* ─── ASSISTANT DRAWER ─── */
-.assistant-btn {
-  position:fixed; bottom:28px; right:28px; z-index:300;
-  width:48px; height:48px; border-radius:50%; background:var(--gold);
-  border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;
-  box-shadow:var(--shadow-lg); transition:all 0.2s; font-size:18px; color:white;
-}
-.assistant-btn:hover { transform:scale(1.08); }
-.assistant-drawer {
-  position:fixed; bottom:0; left:0; right:0; z-index:290;
-  height:420px; background:var(--surface); border-top:1px solid var(--border);
-  transform:translateY(100%); transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);
-  display:flex; flex-direction:column;
-}
-.assistant-drawer.open { transform:translateY(0); }
-.drawer-header {
-  padding:16px 20px; border-bottom:1px solid var(--border);
-  display:flex; justify-content:space-between; align-items:center;
-}
-.drawer-title { font-family:'Playfair Display',serif; font-size:18px; color:var(--text); }
-.drawer-close {
-  font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.12em;
-  text-transform:uppercase; color:var(--text3); cursor:pointer; background:none; border:none;
-}
-.drawer-messages {
-  flex:1; overflow-y:auto; padding:16px 20px; display:flex; flex-direction:column; gap:10px;
-}
-.starter-prompts { display:flex; flex-wrap:wrap; gap:8px; padding:12px 20px; border-top:1px solid var(--border); }
-.starter-chip {
-  font-family:'Jost',sans-serif; font-size:11px; color:var(--text2); padding:6px 12px;
-  border:1px solid var(--border); border-radius:20px; cursor:pointer; background:var(--surface2);
-  transition:all 0.2s; font-weight:300;
-}
-.starter-chip:hover { border-color:var(--gold); color:var(--gold); }
-.drawer-input-row { display:flex; gap:8px; padding:12px 20px; border-top:1px solid var(--border); }
-.drawer-input {
-  flex:1; font-family:'Jost',sans-serif; font-size:13px; color:var(--text);
-  background:var(--surface2); border:1px solid var(--border); border-radius:8px;
-  padding:8px 14px; outline:none; transition:border-color 0.2s;
-}
-.drawer-input:focus { border-color:var(--gold); }
-.drawer-send {
-  font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.12em;
-  text-transform:uppercase; padding:8px 16px; border-radius:8px;
-  border:none; background:var(--gold); color:white; cursor:pointer; transition:all 0.2s;
-}
-.drawer-send:hover { opacity:0.85; }
 
 /* ─── PROGRESSION PROMPT ─── */
 .progression-prompt {
@@ -974,12 +902,6 @@ input:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
         <div class="label">Time available</div>
         <input type="text" class="time-input" id="timeAvailable" value="90 min" onchange="saveTimeAvailable()">
       </div>
-    </div>
-
-    <!-- Availability Toggles -->
-    <div class="card">
-      <div class="label" style="margin-bottom:10px;">Available Today</div>
-      <div class="avail-grid" id="availGrid"></div>
     </div>
 
     <!-- Injury Flags -->
@@ -1355,9 +1277,6 @@ input:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
           <input type="text" class="form-input" id="editName" placeholder="Your name">
           <div class="label" style="margin-bottom:4px;margin-top:4px;">City</div>
           <input type="text" class="form-input" id="editLocation" placeholder="e.g. New York, Miami, London">
-          <div class="label" style="margin-bottom:4px;margin-top:4px;">Anthropic API Key</div>
-          <div style="font-family:'Jost',sans-serif;font-size:11px;color:var(--text4);margin-bottom:5px;font-weight:300;">Required for AI features. Get yours at console.anthropic.com</div>
-          <input type="password" class="form-input" id="editApiKey" placeholder="sk-ant-...">
           <button class="add-btn" onclick="saveProfile()">Save Profile</button>
           <span class="saved-flash" id="profileFlash" style="opacity:0;">✓ Saved</span>
         </div>
@@ -1436,19 +1355,10 @@ input:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
           <button class="add-btn" onclick="resetSection('sports')" style="border-color:var(--border);color:var(--text3);background:transparent;font-size:9px;">Reset Sports & Locations</button>
         </div>
 
-        <!-- Weekly Availability -->
-        <div class="config-title" style="margin-top:16px;">Weekly Availability</div>
-        <div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text3);font-weight:300;margin-bottom:8px;">Check which activities you can do each day. This drives your weekly schedule options.</div>
-        <div style="overflow-x:auto;">
-          <table class="avail-table" id="availTable"></table>
-        </div>
-        <button class="add-btn" onclick="saveWeekAvail()">Save Availability</button>
-        <button class="add-btn" onclick="resetSection('avail')" style="border-color:var(--border);color:var(--text3);background:transparent;font-size:9px;margin-top:4px;">Reset Availability</button>
-
         <!-- Weekly Schedule -->
         <div class="config-title" style="margin-top:16px;">Weekly Schedule</div>
         <div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text3);font-weight:300;line-height:1.6;margin-bottom:8px;">
-          Only shows what you marked available above. Set workout duration per day.
+          Set your activity type and workout duration per day.
         </div>
         <div id="weekScheduleConfig"></div>
         <button class="add-btn" onclick="saveWeekSchedule()" style="margin-top:6px;">Save Schedule</button>
@@ -1549,25 +1459,6 @@ input:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
   </div>
 </div>
 
-<!-- FORMA ASSISTANT -->
-<button class="assistant-btn" onclick="toggleDrawer()">✦</button>
-<div class="assistant-drawer" id="assistantDrawer">
-  <div class="drawer-header">
-    <div class="drawer-title">FORMA Assistant</div>
-    <button class="drawer-close" onclick="toggleDrawer()">Close ✕</button>
-  </div>
-  <div class="drawer-messages" id="drawerMessages"></div>
-  <div class="starter-prompts" id="starterPrompts">
-    <div class="starter-chip" onclick="sendDrawerMsg('How is my recovery looking this week?')">How is my recovery looking this week?</div>
-    <div class="starter-chip" onclick="sendDrawerMsg('What supplement should I prioritize today?')">What supplement should I prioritize today?</div>
-    <div class="starter-chip" onclick="sendDrawerMsg('My shoulder hurts more than usual, adjust my plan')">My shoulder hurts more than usual</div>
-    <div class="starter-chip" onclick="sendDrawerMsg('I only have 30 minutes - what\'s the smartest move?')">I only have 30 minutes</div>
-  </div>
-  <div class="drawer-input-row">
-    <input type="text" class="drawer-input" id="drawerInput" placeholder="Ask FORMA anything..." onkeydown="if(event.key==='Enter')sendDrawerMsg()">
-    <button class="drawer-send" onclick="sendDrawerMsg()">Send</button>
-  </div>
-</div>
 
 <script>
 // ─── DATA & DEFAULTS ───────────────────────────────────────────────
@@ -1783,8 +1674,6 @@ let warmupInterval = null;
 let warmupSeconds = 0;
 let warmupStarted = false;
 let currentNutrTab = 'am';
-let chatHistory = JSON.parse(localStorage.getItem('forma-chat') || '[]');
-let drawerOpen = false;
 let currentJournalTime = 'morning';
 
 function getSports() { return JSON.parse(localStorage.getItem('sports') || 'null') || defaultSports; }
@@ -1998,7 +1887,6 @@ function unlockInTraining() {
 
 // ─── RENDER ALL ─────────────────────────────────────────────────────
 function renderAll() {
-  renderAvailToggles();
   renderHeroCard();
   renderWeekStrip();
   renderWeekGrid();
@@ -2063,49 +1951,34 @@ function renderWeekStrip() {
   }).join('');
 }
 
-// ─── AVAILABILITY TOGGLES ────────────────────────────────────────────
-function renderAvailToggles() {
-  const sports = getSports();
-  const todayKey = getTodayKey();
-  const avail = JSON.parse(localStorage.getItem('weekAvail') || '{}');
-  const todayAvail = avail[todayKey] || {};
-  const grid = document.getElementById('availGrid');
-  if (!grid) return;
-  grid.innerHTML = sports.map(s => {
-    const on = todayAvail[s.id] !== false;
-    // Use location name for display, but show sport type as sub-label
-    const label = s.name.split(' ')[0]; // first word of location name
-    return `<div class="avail-pill ${on?'on':''}" onclick="toggleAvail('${s.id}',this)">
-      <div class="avail-dot"></div>
-      <div class="avail-icon">${s.icon}</div>
-      <div class="avail-label">${label}</div>
-    </div>`;
-  }).join('');
-}
-
-function toggleAvail(id, el) {
-  const todayKey = getTodayKey();
-  const avail = JSON.parse(localStorage.getItem('weekAvail') || '{}');
-  if (!avail[todayKey]) avail[todayKey] = {};
-  const cur = avail[todayKey][id] !== false;
-  avail[todayKey][id] = !cur;
-  localStorage.setItem('weekAvail', JSON.stringify(avail));
-  el.classList.toggle('on', !cur);
-}
-
 // ─── ALARM CALC ──────────────────────────────────────────────────────
-function calcAlarm() {
-  const today = new Date();
-  const weekIdx = (today.getDay() + 6) % 7;
-  const weekData = getWeekData();
-  const todayKey = getTodayKey();
-  const userSchedule = getUserSchedule();
-  const todayPlan = weekData[todayKey] || userSchedule[weekIdx] || defaultWeek[weekIdx];
-  const wMins = parseInt(localStorage.getItem('timeAvailable_' + todayKey) || todayPlan.mins || 60);
-  const settings = getScheduleSettings(weekIdx); // use today's day settings
+function calcAlarm(optPlan, optDayIdx) {
+  let plan, dayIdx;
+  if (optPlan && optDayIdx !== undefined) {
+    plan = optPlan;
+    dayIdx = optDayIdx;
+  } else {
+    const today = new Date();
+    dayIdx = (today.getDay() + 6) % 7;
+    const weekData = getWeekData();
+    const todayKey = getTodayKey();
+    const userSchedule = getUserSchedule();
+    plan = weekData[todayKey] || userSchedule[dayIdx] || defaultWeek[dayIdx];
+  }
+  if (plan.type === 'rest') {
+    const alarmEl = document.getElementById('alarmTime');
+    const breakEl = document.getElementById('alarmBreak');
+    const ta = document.getElementById('timeAvailable');
+    if (alarmEl) alarmEl.textContent = '—';
+    if (breakEl) breakEl.textContent = 'Rest day — no alarm needed';
+    if (ta) ta.value = '—';
+    return;
+  }
+  const wMins = parseInt(plan.mins || 60);
+  const settings = getScheduleSettings(dayIdx);
   const [sh, sm] = settings.workStart.split(':').map(Number);
   const workStart = sh * 60 + (sm || 0);
-  const gymCommute = getCommute(todayPlan.type);
+  const gymCommute = getCommute(plan.type);
   const goHome = settings.goHomeFirst !== false;
   const returnCommute = goHome ? (settings.homeCommute || gymCommute) : 0;
   const shower = settings.shower || 20;
@@ -2485,6 +2358,9 @@ function selectCalDay(key) {
   // Update LEFT PANEL hero card to show selected day's session
   updateHeroForDay(plan, isToday);
 
+  // Update Wake Up card for the selected day
+  calcAlarm(plan, dow);
+
   // Update center detail card
   const wakeTime = calcWakeForPlan(plan, dow);
   const dateObj = new Date(key + 'T12:00:00');
@@ -2549,7 +2425,7 @@ function selectCalDay(key) {
   const dayNames2 = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const monthNames2 = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   const dayLabel = `${dayNames2[dateObj2.getDay()]} ${monthNames2[dateObj2.getMonth()]} ${dateObj2.getDate()}${isToday ? ' · Today' : ''}`;
-  renderTimeline(plan, dayLabel);
+  renderTimeline(plan, dayLabel, dow);
 }
 
 // Updates the left panel hero card for any given plan (not just today)
@@ -2660,9 +2536,9 @@ function saveDayDur(dateKey, val) {
 
 
 // ─── TIMELINE ─────────────────────────────────────────────────────────
-function renderTimeline(plan, dayLabel) {
+function renderTimeline(plan, dayLabel, dayIdx) {
   const today = new Date();
-  const weekIdx = (today.getDay() + 6) % 7;
+  const weekIdx = dayIdx !== undefined ? dayIdx : (today.getDay() + 6) % 7;
   const activePlan = plan || (getWeekData()[getTodayKey()] || getUserSchedule()[weekIdx] || defaultWeek[weekIdx]);
   const settings = getScheduleSettings(weekIdx);
   const [sh, sm] = (settings.workStart || '09:00').split(':').map(Number);
@@ -2886,78 +2762,13 @@ function addAIMessage(text, role) {
   msgs.scrollTop = msgs.scrollHeight;
 }
 
-// ─── ASSISTANT DRAWER ─────────────────────────────────────────────────
-// ─── ASSISTANT DRAWER ─────────────────────────────────────────────────
-function toggleDrawer() {
-  drawerOpen = !drawerOpen;
-  document.getElementById('assistantDrawer').classList.toggle('open', drawerOpen);
-  if (drawerOpen) {
-    renderDrawerMessages();
-    if (chatHistory.length > 0) {
-      document.getElementById('starterPrompts').style.display = 'none';
-    }
-  }
-}
-
-function renderDrawerMessages() {
-  const container = document.getElementById('drawerMessages');
-  container.innerHTML = '';
-  chatHistory.forEach(m => {
-    const div = document.createElement('div');
-    div.className = `ai-msg ${m.role === 'user' ? 'user' : 'assistant'}`;
-    div.innerHTML = `<div class="ai-msg-text">${m.content}</div><div class="ai-msg-time">${m.time || ''}</div>`;
-    container.appendChild(div);
-  });
-  container.scrollTop = container.scrollHeight;
-}
-
-async function sendDrawerMsg(presetMsg) {
-  const input = document.getElementById('drawerInput');
-  const msg = presetMsg || input.value.trim();
-  if (!msg) return;
-  input.value = '';
-  const now = new Date();
-  const timeStr = `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
-  chatHistory.push({role:'user', content:msg, time:timeStr});
-  document.getElementById('starterPrompts').style.display = 'none';
-  renderDrawerMessages();
-  const loadingEl = document.createElement('div');
-  loadingEl.className = 'ai-loading';
-  loadingEl.textContent = '✦ thinking...';
-  document.getElementById('drawerMessages').appendChild(loadingEl);
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':localStorage.getItem('forma-api-key')||'','anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
-        system: buildProfile() + `\n\nYou are FORMA, the user's personal performance AI. Be conversational, specific, and honest. Reference their actual profile data. Never be generic.`,
-        messages: chatHistory.filter(m=>m.role==='user'||m.role==='assistant').map(m=>({role:m.role,content:m.content}))
-      })
-    });
-    const data = await response.json();
-    loadingEl.remove();
-    const reply = data.content.map(c=>c.text||'').join('');
-    chatHistory.push({role:'assistant', content:reply, time:timeStr});
-    if (chatHistory.length > 40) chatHistory = chatHistory.slice(-40);
-    localStorage.setItem('forma-chat', JSON.stringify(chatHistory));
-    renderDrawerMessages();
-  } catch(e) {
-    loadingEl.remove();
-    chatHistory.push({role:'assistant', content:'Add your API key in Config to enable the assistant.', time:timeStr});
-    renderDrawerMessages();
-  }
-}
 
 // ─── CONFIG ───────────────────────────────────────────────────────────
 function renderConfig() {
   const nameEl = document.getElementById('editName');
   const locEl  = document.getElementById('editLocation');
-  const keyEl  = document.getElementById('editApiKey');
   if (nameEl) nameEl.value = localStorage.getItem('forma-name') || '';
   if (locEl)  locEl.value  = localStorage.getItem('forma-location') || '';
-  if (keyEl)  keyEl.value  = localStorage.getItem('forma-api-key') || '';
   const dietary = document.getElementById('nutrDietary');
   if (dietary) dietary.value = getNutrPrefs().dietary || '';
   renderMorningDayTabs();
@@ -2972,7 +2783,6 @@ function renderConfig() {
   renderInjuryManager();
   renderWeekScheduleConfig();
   renderSportsList();
-  renderAvailTable();
   renderSuppCards();
 }
 
@@ -3121,7 +2931,6 @@ function showAlarmPreview(settings, dayIdx) {
 function resetSection(section) {
   const labels = {
     sports: 'Sports & Locations',
-    avail: 'Weekly Availability',
     schedule: 'Weekly Schedule',
     injuries: 'Active Injuries & PT',
     nutrition: 'Nutrition Preferences',
@@ -3134,11 +2943,6 @@ function resetSection(section) {
       localStorage.removeItem('sports');
       syncSportsEverywhere();
       renderSportsList();
-      break;
-    case 'avail':
-      localStorage.removeItem('weekAvail');
-      renderAvailTable();
-      renderWeekScheduleConfig();
       break;
     case 'schedule':
       localStorage.removeItem('forma-schedule');
@@ -3257,8 +3061,6 @@ function removeSport(id) {
 
 function syncSportsEverywhere() {
   renderSportsList();
-  renderAvailTable();
-  renderAvailToggles();
   renderWeekScheduleConfig();
   calcAlarm();
 }
@@ -3277,42 +3079,11 @@ function renderSportsList() {
   ).join('') || `<div style="font-family:'Jost',sans-serif;font-size:12px;color:var(--text4);padding:8px 0;font-style:italic;">No activities added yet.</div>`;
 }
 
-function renderAvailTable() {
-  const sports = getSports();
-  const days = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
-  const avail = JSON.parse(localStorage.getItem('weekAvail') || '{}');
-  const defaultAvail = avail['default'] || {};
-  let html = `<tr><th></th>${days.map(d=>`<th style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.1em;color:var(--text3);padding:4px 8px;">${d}</th>`).join('')}</tr>`;
-  sports.forEach(s => {
-    html += `<tr><td style="font-family:'Jost',sans-serif;font-size:11px;white-space:nowrap;padding:6px 8px;">${s.icon} ${s.activity || s.name}</td>`;
-    days.forEach((d,i) => {
-      // Explicit true = on, anything else = off
-      const on = defaultAvail[s.id + '_' + i] === true;
-      html += `<td style="text-align:center;"><div class="avail-toggle ${on?'on':''}" onclick="toggleWeekAvail('${s.id}',${i},this)"></div></td>`;
-    });
-    html += '</tr>';
-  });
-  document.getElementById('availTable').innerHTML = html;
-}
-
-function toggleWeekAvail(sportId, dayIdx, el) {
-  const avail = JSON.parse(localStorage.getItem('weekAvail') || '{}');
-  if (!avail['default']) avail['default'] = {};
-  const key = sportId + '_' + dayIdx;
-  // Toggle explicitly between true and false
-  avail['default'][key] = avail['default'][key] !== true;
-  localStorage.setItem('weekAvail', JSON.stringify(avail));
-  el.classList.toggle('on', avail['default'][key]);
-  renderWeekScheduleConfig();
-}
-
 function saveProfile() {
   const name = document.getElementById('editName').value.trim();
   const loc  = document.getElementById('editLocation').value.trim();
-  const key  = document.getElementById('editApiKey') ? document.getElementById('editApiKey').value.trim() : '';
   localStorage.setItem('forma-name', name);
   localStorage.setItem('forma-location', loc);
-  if (key) localStorage.setItem('forma-api-key', key);
   updateGreeting();
   const flash = document.getElementById('profileFlash');
   flash.style.opacity = '1';
@@ -3509,25 +3280,12 @@ function renderWeekScheduleConfig() {
   if (!el) return;
   const schedule = getUserSchedule();
   const sports = getSports();
-  const avail = JSON.parse(localStorage.getItem('weekAvail') || '{}');
-  const defaultAvail = avail['default'] || {};
-  const hasAvailData = Object.keys(defaultAvail).length > 0;
 
   el.innerHTML = schedule.map((day, i) => {
-    // Get sports marked available for this day index
-    const dayAvailSports = hasAvailData
-      ? sports.filter(s => defaultAvail[s.id + '_' + i] === true)
-      : sports;
-
-    // Build type options from available sports + rest
+    // Build type options from all sports + rest
     const seen = new Set();
-    const typeOptions = [...dayAvailSports.map(s => ({value: s.type, label: `${s.icon} ${s.activity || s.name}`})), {value:'rest', label:'🌙 Rest'}]
+    const finalOpts = [...sports.map(s => ({value: s.type, label: `${s.icon} ${s.activity || s.name}`})), {value:'rest', label:'🌙 Rest'}]
       .filter(t => { if (seen.has(t.value)) return false; seen.add(t.value); return true; });
-
-    // Fallback if nothing available — show all sports
-    const finalOpts = typeOptions.length > 1 ? typeOptions
-      : [...sports.map(s=>({value:s.type,label:`${s.icon} ${s.activity||s.name}`})),{value:'rest',label:'🌙 Rest'}]
-          .filter((t,_,a) => a.findIndex(x=>x.value===t.value)===a.indexOf(t));
 
     const focusOpts = workoutFocusOptions[day.type] || [];
     const currentFocus = day.focus || defaultFocus[day.type] || '';
@@ -3723,7 +3481,7 @@ function getNutrPrefs() {
 function confirmReset() {
   if (confirm('Reset all activities, injuries, supplements, schedule and nutrition? Your name, city and mode will stay.')) {
     // Keys to keep
-    const keep = ['forma-name','forma-location','forma-mode','forma-api-key'];
+    const keep = ['forma-name','forma-location','forma-mode'];
     const saved = {};
     keep.forEach(k => { const v = localStorage.getItem(k); if (v) saved[k] = v; });
 
@@ -3751,13 +3509,6 @@ function confirmReset() {
     const btn = document.querySelector('.add-btn[onclick="confirmReset()"]');
     if (btn) { btn.textContent = '✓ Reset'; setTimeout(() => btn.textContent = 'Reset FORMA', 2000); }
   }
-}
-
-function saveWeekAvail() {
-  // Availability is saved live via toggleWeekAvail, just re-render schedule
-  renderWeekScheduleConfig();
-  const label = document.querySelector('.add-btn[onclick="saveWeekAvail()"]');
-  if (label) { label.textContent = '✓ Saved'; setTimeout(()=>label.textContent='Save Availability',1500); }
 }
 
 function renderSuppCards() {
