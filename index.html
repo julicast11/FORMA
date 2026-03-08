@@ -1344,6 +1344,11 @@ input:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
             <input type="time" class="form-input" id="workStartTime" value="09:00">
           </div>
           <div style="display:flex;flex-direction:column;gap:3px;">
+            <div class="label">Morning routine before gym (mins)</div>
+            <div style="font-family:'Jost',sans-serif;font-size:10px;color:var(--text4);font-weight:300;">Coffee, journaling, stretching — before you leave the house</div>
+            <input type="number" class="form-input" id="morningRoutineMins" placeholder="e.g. 15" min="0">
+          </div>
+          <div style="display:flex;flex-direction:column;gap:3px;">
             <div class="label">Commute to office (mins)</div>
             <div style="font-family:'Jost',sans-serif;font-size:10px;color:var(--text4);font-weight:300;">Door to desk</div>
             <input type="number" class="form-input" id="officeCommuteMins" placeholder="e.g. 35" min="0">
@@ -1377,6 +1382,15 @@ input:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
               <div class="label">Buffer / other (mins)</div>
               <div style="font-family:'Jost',sans-serif;font-size:10px;color:var(--text4);font-weight:300;">Packing bag, walking dog, anything else</div>
               <input type="number" class="form-input" id="bufferMins" placeholder="e.g. 10" min="0">
+            </div>
+          </div>
+          <div style="border-top:1px solid var(--border);padding-top:8px;margin-top:4px;">
+            <div class="label" style="margin-bottom:6px;color:var(--gold);">Custom steps</div>
+            <div id="customStepsList"></div>
+            <div style="display:flex;gap:6px;align-items:center;margin-top:6px;">
+              <input type="text" class="form-input" id="customStepLabel" placeholder="e.g. Walk dog" style="flex:1;" maxlength="40">
+              <input type="number" class="form-input" id="customStepMins" placeholder="min" style="width:60px;" min="1">
+              <button class="add-btn" onclick="addCustomStep()" style="margin:0;padding:6px 12px;white-space:nowrap;">+ Add</button>
             </div>
           </div>
           <button class="add-btn" onclick="saveDayScheduleSettings()">Save This Day</button>
@@ -2058,15 +2072,18 @@ function calcAlarm(optPlan, optDayIdx) {
   const breakfast = settings.breakfast || 15;
   const buffer = settings.buffer || 10;
   const officeCommute = settings.officeCommute || 30;
-  const wakeMin = workStart - officeCommute - buffer - breakfast - shower - returnCommute - wMins - gymCommute;
+  const morningRoutine = settings.morningRoutine || 0;
+  const customTotal = getCustomStepsTotal(settings);
+  const wakeMin = workStart - officeCommute - buffer - breakfast - shower - returnCommute - wMins - gymCommute - morningRoutine - customTotal;
   const wakeH = Math.floor(wakeMin / 60);
   const wakeM = wakeMin % 60;
   const ampm = wakeH >= 12 ? 'PM' : 'AM';
   const h12 = wakeH > 12 ? wakeH - 12 : (wakeH === 0 ? 12 : wakeH);
   const alarmEl = document.getElementById('alarmTime');
   const breakEl = document.getElementById('alarmBreak');
+  const customLabel = (settings.customSteps || []).map(s => `${s.mins} min ${s.label}`).join(' − ');
   if (alarmEl) alarmEl.textContent = `${h12}:${String(wakeM).padStart(2,'0')} ${ampm}`;
-  if (breakEl) breakEl.textContent = `${settings.workStart} work − ${officeCommute} min office${goHome ? ` − ${returnCommute} min home` : ' − straight'} − ${shower+breakfast+buffer} min routine − ${wMins} min workout − ${gymCommute} min to gym`;
+  if (breakEl) breakEl.textContent = `${settings.workStart} work − ${officeCommute} min office${goHome ? ` − ${returnCommute} min home` : ' − straight'} − ${shower+breakfast+buffer} min routine − ${wMins} min workout${morningRoutine ? ` − ${morningRoutine} min morning` : ''}${customLabel ? ' − ' + customLabel : ''} − ${gymCommute} min to gym`;
   const ta = document.getElementById('timeAvailable');
   if (ta) ta.value = `${wMins} min`;
 }
@@ -2585,10 +2602,12 @@ function calcWakeForPlan(plan, dayIdx) {
   const breakfast = settings.breakfast || 15;
   const buffer = settings.buffer || 10;
   const officeCommute = settings.officeCommute || 30;
+  const morningRoutine = settings.morningRoutine || 0;
   const goHome = settings.goHomeFirst !== false;
   const returnCommute = goHome ? (settings.homeCommute || gymCommute) : 0;
   const wMins = parseInt(plan.mins) || 60;
-  const wakeMin = workStart - officeCommute - buffer - breakfast - shower - returnCommute - wMins - gymCommute;
+  const customTotal = getCustomStepsTotal(settings);
+  const wakeMin = workStart - officeCommute - buffer - breakfast - shower - returnCommute - wMins - gymCommute - morningRoutine - customTotal;
   const wakeH = Math.floor(wakeMin / 60);
   const wakeM = wakeMin % 60;
   const ampm = wakeH >= 12 ? 'PM' : 'AM';
@@ -2623,8 +2642,10 @@ function renderTimeline(plan, dayLabel, dayIdx) {
   const breakfast = settings.breakfast || 15;
   const buffer = settings.buffer || 10;
   const officeCommute = settings.officeCommute || 30;
+  const morningRoutine = settings.morningRoutine || 0;
+  const customTotal = getCustomStepsTotal(settings);
   const wMins = parseInt(activePlan.mins) || 60;
-  const wakeMin = workStart - officeCommute - buffer - breakfast - shower - returnCommute - wMins - gymCommute;
+  const wakeMin = workStart - officeCommute - buffer - breakfast - shower - returnCommute - wMins - gymCommute - morningRoutine - customTotal;
   const isRest = activePlan.type === 'rest';
 
   // Update timeline header with day label
@@ -2650,11 +2671,14 @@ function renderTimeline(plan, dayLabel, dayIdx) {
   } else {
     events = [
       {label:'Wake Up', min:wakeMin, color:'var(--gold)'},
-      {label:`${activePlan.name || activePlan.type} starts`, min:wakeMin + gymCommute, color:'var(--sage)'},
-      {label:'Commute' + (goHome ? ' home' : ' to office'), min:wakeMin + gymCommute + wMins, color:'var(--slate)'},
+    ];
+    if (morningRoutine) events.push({label:'Morning Routine', min:wakeMin + morningRoutine, color:'var(--gold)'});
+    events.push(
+      {label:`${activePlan.name || activePlan.type} starts`, min:wakeMin + morningRoutine + gymCommute, color:'var(--sage)'},
+      {label:'Commute' + (goHome ? ' home' : ' to office'), min:wakeMin + morningRoutine + gymCommute + wMins, color:'var(--slate)'},
       {label:'Work Begins', min:workStart, color:'var(--terra)'},
       {label:'Evening', min:18*60, color:'var(--lav)'},
-    ];
+    );
   }
 
   const tl = document.getElementById('dayTimeline');
@@ -2687,7 +2711,7 @@ function calcWakeMin(plan) {
   const gymCommute = getCommute(plan.type);
   const goHome = settings.goHomeFirst !== false;
   const returnCommute = goHome ? (settings.homeCommute || gymCommute) : 0;
-  return workStart - (settings.officeCommute||30) - (settings.buffer||10) - (settings.breakfast||15) - (settings.shower||20) - returnCommute - (parseInt(plan.mins)||60) - gymCommute;
+  return workStart - (settings.officeCommute||30) - (settings.buffer||10) - (settings.breakfast||15) - (settings.shower||20) - (settings.morningRoutine||0) - getCustomStepsTotal(settings) - returnCommute - (parseInt(plan.mins)||60) - gymCommute;
 }
 
 // ─── SUPPLEMENTS (Right Panel) ────────────────────────────────────────
@@ -2881,7 +2905,7 @@ let currentMorningDay = 0; // 0=Mon
 function getAllDaySettings() {
   const stored = localStorage.getItem('forma-day-settings');
   if (stored) return JSON.parse(stored);
-  const def = {workStart:'09:00', officeCommute:30, homeCommute:20, shower:20, breakfast:15, buffer:10, goHomeFirst:true};
+  const def = {workStart:'09:00', officeCommute:30, homeCommute:20, shower:20, breakfast:15, buffer:10, morningRoutine:0, goHomeFirst:true};
   return DAY_NAMES.map(() => ({...def}));
 }
 function saveDaySettings(arr) { localStorage.setItem('forma-day-settings', JSON.stringify(arr)); }
@@ -2924,6 +2948,7 @@ function loadMorningDayForm(idx) {
   set('workStartTime', s.workStart || '09:00');
   set('officeCommuteMins', s.officeCommute || 30);
   set('homeCommuteMins', s.homeCommute || 20);
+  set('morningRoutineMins', s.morningRoutine || 0);
   set('showerMins', s.shower || 20);
   set('breakfastMins', s.breakfast || 15);
   set('bufferMins', s.buffer || 10);
@@ -2934,6 +2959,7 @@ function loadMorningDayForm(idx) {
   if (officeEl) officeEl.checked = !goHome;
   const homeField = document.getElementById('homeCommuteField');
   if (homeField) homeField.style.display = goHome ? 'flex' : 'none';
+  renderCustomStepsList(idx);
   // Hide preview when switching days
   const prev = document.getElementById('alarmPreview');
   if (prev) prev.style.display = 'none';
@@ -2953,10 +2979,12 @@ function saveDayScheduleSettings() {
     workStart:     document.getElementById('workStartTime').value || '09:00',
     officeCommute: parseInt(document.getElementById('officeCommuteMins').value) || 30,
     homeCommute:   parseInt(document.getElementById('homeCommuteMins').value) || 20,
+    morningRoutine:parseInt(document.getElementById('morningRoutineMins').value) || 0,
     shower:        parseInt(document.getElementById('showerMins').value) || 20,
     breakfast:     parseInt(document.getElementById('breakfastMins').value) || 15,
     buffer:        parseInt(document.getElementById('bufferMins').value) || 10,
     goHomeFirst:   goHome,
+    customSteps:   getScheduleSettings(currentMorningDay).customSteps || [],
   };
   const all = getAllDaySettings();
   all[currentMorningDay] = settings;
@@ -2971,6 +2999,48 @@ function saveDayScheduleSettings() {
 // Legacy alias
 function saveScheduleSettings() { saveDayScheduleSettings(); }
 
+function getCustomStepsTotal(settings) {
+  return (settings.customSteps || []).reduce((sum, s) => sum + (s.mins || 0), 0);
+}
+
+function renderCustomStepsList(dayIdx) {
+  const el = document.getElementById('customStepsList');
+  if (!el) return;
+  const steps = getScheduleSettings(dayIdx).customSteps || [];
+  el.innerHTML = steps.map((s, i) => `
+    <div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);">
+      <div style="flex:1;font-family:'Jost',sans-serif;font-size:12px;color:var(--text2);font-weight:300;">${s.label}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text3);">${s.mins} min</div>
+      <button onclick="removeCustomStep(${i})" style="background:none;border:none;cursor:pointer;color:var(--terra);font-size:13px;padding:2px 6px;">✕</button>
+    </div>`).join('');
+}
+
+function addCustomStep() {
+  const labelEl = document.getElementById('customStepLabel');
+  const minsEl = document.getElementById('customStepMins');
+  const label = labelEl.value.trim();
+  const mins = parseInt(minsEl.value);
+  if (!label || !mins || mins < 1) { labelEl.focus(); return; }
+  const all = getAllDaySettings();
+  if (!all[currentMorningDay].customSteps) all[currentMorningDay].customSteps = [];
+  all[currentMorningDay].customSteps.push({label, mins});
+  saveDaySettings(all);
+  labelEl.value = '';
+  minsEl.value = '';
+  renderCustomStepsList(currentMorningDay);
+  calcAlarm();
+}
+
+function removeCustomStep(idx) {
+  const all = getAllDaySettings();
+  if (all[currentMorningDay].customSteps) {
+    all[currentMorningDay].customSteps.splice(idx, 1);
+    saveDaySettings(all);
+    renderCustomStepsList(currentMorningDay);
+    calcAlarm();
+  }
+}
+
 function showAlarmPreview(settings, dayIdx) {
   const preview = document.getElementById('alarmPreview');
   const text = document.getElementById('alarmPreviewText');
@@ -2984,11 +3054,16 @@ function showAlarmPreview(settings, dayIdx) {
   const workStart = sh * 60 + (sm || 0);
   const goHome = settings.goHomeFirst !== false;
   const returnCommute = goHome ? (settings.homeCommute || gymCommute) : 0;
-  const wakeMin = workStart - settings.officeCommute - settings.buffer - settings.breakfast - settings.shower - returnCommute - wMins - gymCommute;
+  const morningRoutine = settings.morningRoutine || 0;
+  const customTotal = getCustomStepsTotal(settings);
+  const wakeMin = workStart - settings.officeCommute - settings.buffer - settings.breakfast - settings.shower - returnCommute - wMins - gymCommute - morningRoutine - customTotal;
   const fmt = m => { const h = Math.floor(((m%1440)+1440)%1440/60); const min = ((m%1440)+1440)%1440%60; const ap=h>=12?'PM':'AM'; const h12=h>12?h-12:(h===0?12:h); return `${h12}:${String(min).padStart(2,'0')} ${ap}`; };
+  const customLines = (settings.customSteps || []).map(s => `+ ${s.mins} min → ${s.label}<br>`).join('');
   text.innerHTML = `
     <strong>${DAY_NAMES[idx]}</strong><br>
     ${fmt(wakeMin)} &nbsp;<strong>Wake up</strong><br>
+    ${morningRoutine ? `+ ${morningRoutine} min → morning routine<br>` : ''}
+    ${customLines}
     + ${gymCommute} min → commute to gym<br>
     + ${wMins} min → workout<br>
     ${goHome ? `+ ${returnCommute} min → commute home<br>` : '<span style="color:var(--text4);">→ straight to office</span><br>'}
